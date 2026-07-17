@@ -1,11 +1,22 @@
-# Calendar-Managing-app
-# EEG.workflow.code
-# EEG.workflow.code
-# Justin-chen-app
-# Justin-chen-app
-# Justin-chen-app
-# HappyHollowZoo-website
-# Chinese-learning-app
-# Chinese-learning-app
-# Chinese-learning-app
-# kova
+# Kova
+
+Editorial storefront for the Kova clothing brand, built with React, Vite, and Tailwind CSS.
+
+## Local development
+
+```sh
+corepack enable
+pnpm install
+pnpm dev
+```
+
+## Production build
+
+```sh
+pnpm build
+pnpm preview
+```
+
+## Deployment
+
+Merges to `main` deploy automatically to GitHub Pages through the workflow in `.github/workflows/deploy.yml`.
