@@ -1,4 +1,0 @@
-interface:
-  display_name: "Kova Scroll Art Direction"
-  short_description: "Punchy editorial scroll design for Kova"
-  default_prompt: "Use $kova-scroll-art-direction to design a punchy, art-directed scroll experience for Kova."
