@@ -1,22 +1,10 @@
-# Kova
+# Justin's Portfolio
 
-Editorial storefront for the Kova clothing brand, built with React, Vite, and Tailwind CSS.
+A single-page portfolio for my web design work for local businesses.
 
-## Local development
+- One static `index.html`. No build step: open it in a browser or host it anywhere.
+- Scroll-driven scenes tell a before/after story, with an example redesign of a fictional bakery.
+- The "Who's building it" scene uses [ShaderGradient](https://github.com/ruucm/shadergradient) (React Three Fiber + three.js), loaded from jsDelivr only when you scroll near it.
+- Respects `prefers-reduced-motion`.
 
-```sh
-corepack enable
-pnpm install
-pnpm dev
-```
-
-## Production build
-
-```sh
-pnpm build
-pnpm preview
-```
-
-## Deployment
-
-Merges to `main` deploy automatically to GitHub Pages through the workflow in `.github/workflows/deploy.yml`.
+The previous Kova storefront is preserved on the `storefront-backup` branch.
