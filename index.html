@@ -291,6 +291,17 @@ del, ins { text-decoration: none; }
   transition: opacity 0.9s var(--ease);
 }
 .plus-clip.ready { opacity: 1; }
+/* Film grain over the about gradient. ShaderGradient's own grain is all or nothing, so this layer sets how
+   strong it is: the noise frequency sets the grain size, the opacity sets how much shows. */
+#sg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+  opacity: 0.22;
+}
 #who .creds {
   position: relative;
   z-index: 1;
@@ -327,13 +338,13 @@ del, ins { text-decoration: none; }
 /* One tall sky gradient slides up as the sun rises, so night turns to dawn through violet and pink, never mud.
    Its last quarter is morning, reached while the steps play. */
 #case .stage {
-  padding-block: 64px 28px;
+  padding-block: 44px 24px;
   isolation: isolate;
   background: linear-gradient(180deg, #0B1033 0%, #1B2A6B 22.5%, #6A3C8C 36%, #E94F64 46.5%, #FF8A5B 60%, #FFC56B 75%, #FFF3DC 100%);
   background-size: 100% 400%;
   background-position: 50% calc((var(--sun) * 2 / 3 + var(--day) / 3) * 100%);
 }
-.case-inner { display: flex; flex-direction: column; gap: 26px; }
+.case-inner { display: flex; flex-direction: column; gap: 18px; }
 .sunburst {
   position: absolute;
   inset: 0;
@@ -376,7 +387,7 @@ del, ins { text-decoration: none; }
 #case .head p { margin: 0; padding: 6px 14px; border-radius: 999px; background: var(--c-line); color: var(--c-cream); font-size: 15px; opacity: calc(1 - clamp(0, (var(--p) - 0.56) / 0.04, 1)); }
 /* The label and headline swap in place: the old words rise out of their box as the new ones rise in */
 #case .head .eyebrow { display: inline-grid; overflow: hidden; }
-#case .head h2 { display: grid; clip-path: inset(-0.15em -0.3em -0.16em -0.15em); }
+#case .head h2 { margin: 6px 0 0; display: grid; clip-path: inset(-0.15em -0.3em -0.16em -0.15em); }
 .sw-a, .sw-b { grid-area: 1 / 1; }
 .sw-a { transform: translateY(calc(var(--hs) * -150%)); }
 .sw-b { transform: translateY(calc((1 - var(--hs)) * 150%)); }
@@ -405,14 +416,14 @@ del, ins { text-decoration: none; }
   position: relative;
   min-width: 0;
   transform-origin: 50% 0;
-  transform: translateY(calc((1 - var(--in)) * 30vh)) scale(calc(0.82 + 0.18 * var(--in)));
+  transform: translateY(calc((1 - var(--in)) * 12vh)) scale(calc(0.82 + 0.18 * var(--in)));
 }
 .frame {
   position: relative;
   width: 100%;
   max-width: 100%;
   aspect-ratio: 16 / 10;
-  max-height: 60svh;
+  max-height: 56svh;
   border: 4px solid var(--c-line);
   border-radius: 20px;
   box-shadow: 10px 10px 0 var(--c-line);
@@ -947,7 +958,7 @@ del, ins { text-decoration: none; }
           </div>
 
           <!-- Stickers in the bakery's style; they pop in as the story reaches them and pop out when it turns into the steps -->
-          <div class="stk s-badge" data-at=".17" data-out=".56" aria-hidden="true" style="--x:-2%;--y:-15%;--w:clamp(84px,9vw,130px);--r:-12deg;--par:80px">
+          <div class="stk s-badge" data-at=".17" data-out=".56" aria-hidden="true" style="--x:-3%;--y:-4%;--w:clamp(84px,9vw,130px);--r:-12deg;--par:80px">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 140 140">
                 <defs><path id="badge-ring" d="M70 70m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs>
@@ -1000,7 +1011,7 @@ del, ins { text-decoration: none; }
           </div>
 
           <!-- Step stickers and chat: the mockup acts out each step. "Free mockup" becomes "Live" in the same spot. -->
-          <div class="stk step-only s-free" data-at=".7" data-out=".885" aria-hidden="true" style="--x:-2%;--y:-15%;--w:clamp(90px,9.4vw,136px);--r:-10deg;--par:80px">
+          <div class="stk step-only s-free" data-at=".7" data-out=".885" aria-hidden="true" style="--x:88%;--y:-11%;--w:clamp(90px,9.4vw,136px);--r:-10deg;--par:80px">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 140 140">
                 <circle cx="70" cy="70" r="64" fill="#E94F37" stroke="#1D1D1F" stroke-width="5"/>
@@ -1010,7 +1021,7 @@ del, ins { text-decoration: none; }
               </svg>
             </div></div>
           </div>
-          <div class="stk step-only s-live" data-at=".885" aria-hidden="true" style="--x:-2%;--y:-12%;--w:clamp(120px,12vw,172px);--r:-6deg;--par:80px">
+          <div class="stk step-only s-live" data-at=".885" aria-hidden="true" style="--x:85%;--y:-8%;--w:clamp(120px,12vw,172px);--r:-6deg;--par:80px">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 170 90">
                 <rect x="5" y="5" width="160" height="80" rx="40" fill="#4CC38A" stroke="#1D1D1F" stroke-width="5"/>
@@ -1796,7 +1807,7 @@ async function mountGradient(target) {
         animate: still ? "off" : "on",
         uSpeed: 0.25, uStrength: 3.2, uDensity: 1.3, uFrequency: 5.5,
         color1: "#6FD3A2", color2: "#8FDDB4", color3: "#4CC38A",
-        lightType: "3d", brightness: 1.15, grain: "on", reflection: 0.1,
+        lightType: "3d", brightness: 1.15, grain: "off", reflection: 0.1,
         cDistance: 3.6, cPolarAngle: 90, cAzimuthAngle: 180,
         positionX: -1.4, positionY: 0, positionZ: 0,
         rotationX: 0, rotationY: 10, rotationZ: 50
