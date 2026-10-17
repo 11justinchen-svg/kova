@@ -268,12 +268,27 @@ del, ins { text-decoration: none; }
 }
 #who .plus::before { left: 0; right: 0; top: 40%; bottom: 40%; }
 #who .plus::after { top: 0; bottom: 0; left: 40%; right: 40%; }
+/* The gradient lives inside the "+": clipped to the same shape and growing with it, so the plus turns into
+   the gradient instead of cutting to it. It fades in only once its first frame is drawn. */
 #who .sg {
+  --k: clamp(0, (var(--p) - 0.04) / 0.42, 1);
+  --s: calc(1 + var(--k) * var(--k) * 70);
+  --L: calc(7vmin * var(--s));
+  --T: calc(1.4vmin * var(--s));
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: clamp(0, (var(--p) - 0.36) / 0.1, 1);
+  clip-path: polygon(
+    calc(50% - var(--T)) calc(50% - var(--L)), calc(50% + var(--T)) calc(50% - var(--L)),
+    calc(50% + var(--T)) calc(50% - var(--T)), calc(50% + var(--L)) calc(50% - var(--T)),
+    calc(50% + var(--L)) calc(50% + var(--T)), calc(50% + var(--T)) calc(50% + var(--T)),
+    calc(50% + var(--T)) calc(50% + var(--L)), calc(50% - var(--T)) calc(50% + var(--L)),
+    calc(50% - var(--T)) calc(50% + var(--T)), calc(50% - var(--L)) calc(50% + var(--T)),
+    calc(50% - var(--L)) calc(50% - var(--T)), calc(50% - var(--T)) calc(50% - var(--T)));
+  opacity: 0;
+  transition: opacity 0.9s var(--ease);
 }
+#who .sg.ready { opacity: 1; }
 #who .creds {
   position: relative;
   z-index: 1;
@@ -647,6 +662,7 @@ del, ins { text-decoration: none; }
   .takeover { display: none; }
   #who .stage { background: var(--add-bg); }
   #who .plus { display: none; }
+  #who .sg { clip-path: none; }
   #same .hint { display: none; }
   .intro, .hero-title .lnin, .hero-title .strike, .cue i, .sunburst, .spark, .a-stars use, .a-rays, .steam path, .after .track, .stk .bob, .stk .spin { animation: none; }
   .stk .pop { transform: scale(1) rotate(var(--r, 0deg)); transition: none; }
@@ -1412,19 +1428,40 @@ const scene = document.getElementById("who");
 const target = document.getElementById("sg");
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+// Fetch the code while the browser is idle after load, so it's ready long before anyone scrolls here
+let modules = null;
+const load = () => modules ??= Promise.all([
+  import("react"),
+  import("react-dom/client"),
+  import("https://cdn.jsdelivr.net/npm/@shadergradient/react@2.4.20/dist/index.mjs"),
+]);
+addEventListener("load", () => (window.requestIdleCallback || setTimeout)(() => load().catch(() => {}), { timeout: 2500 }));
+
+// Fade the gradient in only after its canvas has drawn, so the flat green plus never cuts to a blank frame
+new MutationObserver((_, obs) => {
+  if (!target.querySelector("canvas")) return;
+  obs.disconnect();
+  requestAnimationFrame(() => requestAnimationFrame(() => target.classList.add("ready")));
+}).observe(target, { childList: true, subtree: true });
+
 async function mountGradient() {
-  const [{ createElement: h }, { createRoot }, { ShaderGradientCanvas, ShaderGradient }] = await Promise.all([
-    import("react"),
-    import("react-dom/client"),
-    import("https://cdn.jsdelivr.net/npm/@shadergradient/react@2.4.20/dist/index.mjs"),
-  ]);
+  const [{ createElement: h }, { createRoot }, { ShaderGradientCanvas, ShaderGradient }] = await load();
   createRoot(target).render(
-    h(ShaderGradientCanvas, { style: { position: "absolute", inset: 0 }, pixelDensity: 1, fov: 45, pointerEvents: "none" },
+    h(ShaderGradientCanvas, {
+      style: { position: "absolute", inset: 0 },
+      pixelDensity: innerWidth < 760 ? 0.7 : 1,
+      fov: 45,
+      pointerEvents: "none",
+      powerPreference: "high-performance",
+      // Build the WebGL canvas a full screen before the scene arrives, instead of at 10% visible
+      rootMargin: "100% 0px",
+      threshold: 0,
+    },
       h(ShaderGradient, {
         type: "plane",
         animate: still ? "off" : "on",
         uSpeed: 0.25, uStrength: 3.2, uDensity: 1.3, uFrequency: 5.5,
-        color1: "#6FD3A2", color2: "#B8EBD0", color3: "#4CC38A",
+        color1: "#6FD3A2", color2: "#8FDDB4", color3: "#4CC38A",
         lightType: "3d", brightness: 1.15, grain: "on", reflection: 0.1,
         cDistance: 3.6, cPolarAngle: 90, cAzimuthAngle: 180,
         positionX: -1.4, positionY: 0, positionZ: 0,
@@ -1440,7 +1477,7 @@ const near = new IntersectionObserver((entries) => {
     near.disconnect();
     mountGradient().catch(() => {});
   }
-}, { rootMargin: "150% 0px" });
+}, { rootMargin: "250% 0px" });
 near.observe(scene);
 </script>
 </body>
