@@ -90,6 +90,12 @@ del, ins { text-decoration: none; }
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
+/* Ripple: struck text is split into words (kept unbreakable) and letters that bounce as the strike passes */
+.strike .w { display: inline-block; white-space: nowrap; }
+.strike .ch { display: inline-block; transform-origin: 50% 70%; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+html { scroll-behavior: smooth; }
 
 /* ---------- Header: plain, quiet, like Apple's global nav ---------- */
 .top {
@@ -104,11 +110,14 @@ del, ins { text-decoration: none; }
 .top .name { font-size: 17px; font-weight: 600; letter-spacing: -0.022em; text-decoration: none; }
 
 /* ---------- Scene 1: hero ---------- */
+/* The band spans the full width so the ASCII field can run edge to edge behind the hero */
+.hero-band { position: relative; isolation: isolate; }
+.ascii { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
 .hero { padding-block: 0 64px; }
 .hero .meta {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 4px 24px;
   color: var(--mute);
   font-size: 14px;
@@ -350,9 +359,38 @@ del, ins { text-decoration: none; }
 /* ---------- Scene 6: finale ---------- */
 .end { background: var(--night); color: #F5F5F7; padding-block: clamp(80px, 14vh, 160px) calc(28px + env(safe-area-inset-bottom, 0px)); overflow: hidden; }
 .end .eyebrow { color: var(--add-bg); }
-.end .ask { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px; align-items: end; }
-.end .ask p { margin: 10px 0 0; font-size: clamp(28px, 3.2vw, 48px); line-height: 1.1; max-width: 18ch; font-weight: 700; letter-spacing: -0.03em; }
-.mail { font-size: 17px; user-select: all; color: var(--add-bg); }
+.end .ask { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 30rem); gap: 40px; align-items: start; }
+.end .ask .pitch { margin: 10px 0 0; font-size: clamp(28px, 3.2vw, 48px); line-height: 1.1; max-width: 18ch; font-weight: 700; letter-spacing: -0.03em; }
+.end .alt { margin: 20px 0 0; font-size: 15px; color: #A1A1A6; }
+.mail { user-select: all; color: var(--add-bg); }
+
+/* Mockup request form */
+.form { display: grid; gap: 14px; scroll-margin-top: 32px; }
+.form label { display: grid; gap: 6px; font-size: 14px; color: #D2D2D7; }
+.form label .opt { color: #86868B; }
+.form input, .form textarea {
+  font: inherit; font-size: 17px; letter-spacing: -0.022em;
+  color: #F5F5F7; background: #1C1C1E;
+  border: 1px solid #3A3A3C; border-radius: 12px;
+  padding: 12px 14px; width: 100%;
+}
+.form textarea { resize: vertical; min-height: 96px; }
+.form input:focus, .form textarea:focus { outline: none; border-color: var(--add-bg); box-shadow: 0 0 0 3px rgb(76 195 138 / 0.28); }
+.form [aria-invalid="true"] { border-color: #FF8A80; }
+.form button {
+  justify-self: start;
+  font: inherit; font-size: 17px; font-weight: 600;
+  color: var(--ink); background: var(--add-bg);
+  border: 0; border-radius: 999px; padding: 13px 22px; cursor: pointer;
+}
+.form button:hover { filter: brightness(1.06); }
+.form button:focus-visible { outline: 2px solid #F5F5F7; outline-offset: 3px; }
+.form button:disabled { opacity: 0.6; cursor: progress; }
+.form .status { margin: 0; font-size: 15px; min-height: 1.4em; color: #D2D2D7; }
+.form .status.err { color: #FF8A80; }
+.form.done > :not(.status) { display: none; }
+.form.done .status { font-size: 21px; line-height: 1.35; color: #F5F5F7; }
+.hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
 .big {
   font-size: min(420px, calc((100vw - 32px) / 3.2));
   margin-top: clamp(48px, 10vh, 120px);
@@ -365,6 +403,7 @@ del, ins { text-decoration: none; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 760px) {
+  .hero { padding-bottom: 200px; }
   .hero .lede { grid-template-columns: minmax(0, 1fr); margin-top: 32px; }
   .hero .lede p { font-size: 19px; }
   .hero .disp { font-size: 15vw; }
@@ -396,24 +435,27 @@ del, ins { text-decoration: none; }
   #who .plus { display: none; }
   #same .hint { display: none; }
   .hero .ln.del .strike { animation: none; }
+  html { scroll-behavior: auto; }
   .js .notes li:not(.on) { opacity: 1; transform: none; }
 }
 </style>
 </head>
 <body>
 <main id="top">
-  <!-- Scene 1: the thesis, as a diff -->
+  <!-- Scene 1: the thesis, as a diff. The ASCII Saturn behind it carries "Websites for local businesses" on its ring. -->
+  <div class="hero-band">
+  <canvas class="ascii" aria-hidden="true"></canvas>
   <header class="hero wrap">
     <nav class="top" aria-label="Site">
       <a class="name" href="#top">Justin</a>
-      <a class="link" href="#contact">Get a free mockup ›</a>
+      <a class="link" href="#mockup">Get a free mockup ›</a>
     </nav>
     <div class="meta">
-      <span>Websites for local businesses</span>
+      <p class="sr-only">Websites for local businesses</p>
       <span>AP Computer Science · Top-ranked U.S. high school</span>
     </div>
     <h1 class="disp diff">
-      <del class="ln del"><span class="g" aria-hidden="true">−</span><span class="t"><span class="strike">Template sites.</span></span></del>
+      <del class="ln del"><span class="g" aria-hidden="true">−</span><span class="t"><span class="strike" aria-hidden="true">Template sites.</span><span class="sr-only">Template sites.</span></span></del>
       <ins class="ln add"><span class="g" aria-hidden="true">+</span>Crafted sites.</ins>
     </h1>
     <div class="lede">
@@ -424,13 +466,14 @@ del, ins { text-decoration: none; }
       </div>
     </div>
   </header>
+  </div>
 
   <!-- Scene 2: the problem gets corrected while you scroll -->
   <section class="scene" id="same" data-scene aria-label="The problem">
     <div class="stage wrap">
       <h2 class="disp diff">
         <span style="display:block">Most local sites</span>
-        <del class="old del" style="display:block"><span class="g" aria-hidden="true">−</span><span class="strike">look the same.</span></del>
+        <del class="old del" style="display:block"><span class="g" aria-hidden="true">−</span><span class="strike" aria-hidden="true">look the same.</span><span class="sr-only">look the same.</span></del>
         <ins class="mask add"><span class="new"><span class="g" aria-hidden="true">+</span>should look like the business.</span></ins>
       </h2>
       <span class="hint">Keep scrolling to fix it.</span>
@@ -513,9 +556,29 @@ del, ins { text-decoration: none; }
     <div class="ask">
       <div>
         <span class="eyebrow">Ready when you are</span>
-        <p>Want to see your business redesigned? The mockup is free.</p>
+        <p class="pitch">Want to see your business redesigned? The mockup is free.</p>
+        <p class="alt">Prefer email? <span class="mail">11justinchen@gmail.com</span></p>
       </div>
-      <span class="mail">11justinchen@gmail.com</span>
+      <form class="form" id="mockup" novalidate>
+        <label for="f-name">Your name
+          <input id="f-name" name="name" autocomplete="name" required>
+        </label>
+        <label for="f-business">Business name
+          <input id="f-business" name="business" autocomplete="organization" required>
+        </label>
+        <label for="f-email">Email
+          <input id="f-email" name="email" type="email" autocomplete="email" required>
+        </label>
+        <label for="f-link">Current website or social page <span class="opt">(optional)</span>
+          <input id="f-link" name="link" inputmode="url" autocomplete="url">
+        </label>
+        <label for="f-message">What does your business do? <span class="opt">(optional)</span>
+          <textarea id="f-message" name="message" rows="3"></textarea>
+        </label>
+        <div class="hp" aria-hidden="true"><label for="f-hp">Leave this empty</label><input id="f-hp" name="_honey" tabindex="-1" autocomplete="off"></div>
+        <button type="submit">Request my free mockup</button>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
     </div>
     <p class="disp big" aria-label="Justin">Justin<span aria-hidden="true">+</span></p>
     <div class="foot"><span>Student web designer</span><span>Designed and built by hand.</span></div>
@@ -528,12 +591,119 @@ del, ins { text-decoration: none; }
   const scenes = [...document.querySelectorAll("[data-scene]")];
   const notes = [...document.querySelectorAll(".notes li")];
   const caseScene = document.getElementById("case");
+  const sameScene = document.getElementById("same");
 
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     notes.forEach((n) => n.classList.add("on"));
     return;
   }
 
+  // ---- Ripple: each struck letter is a damped spring that gets a kick when the strike line reaches it ----
+  const KICK = 2.4, STIFF = 260, DAMP = 13;
+  const groups = [];
+
+  function splitLetters(el) {
+    const text = el.textContent;
+    el.textContent = "";
+    const letters = [];
+    for (const part of text.split(/(\s+)/)) {
+      if (!part) continue;
+      if (/^\s+$/.test(part)) { el.append(part); continue; }
+      const word = document.createElement("span");
+      word.className = "w";
+      for (const c of part) {
+        const s = document.createElement("span");
+        s.className = "ch";
+        s.textContent = c;
+        word.append(s);
+        letters.push({ el: s, u: 0, y: 0, v: 0, hit: false });
+      }
+      el.append(word);
+    }
+    return letters;
+  }
+
+  // Each wrapped line is struck on its own, so a letter's position is measured within its line
+  function measure(g) {
+    const lines = new Map();
+    for (const L of g.letters) {
+      const r = L.el.getBoundingClientRect();
+      const key = Math.round(r.top / 4);
+      if (!lines.has(key)) lines.set(key, []);
+      lines.get(key).push({ L, r });
+    }
+    for (const row of lines.values()) {
+      const left = Math.min(...row.map((o) => o.r.left));
+      const right = Math.max(...row.map((o) => o.r.right));
+      for (const { L, r } of row) L.u = (r.left + r.width / 2 - left) / Math.max(1, right - left);
+    }
+  }
+
+  // Same curve as the CSS strike animation, so the bounce lands exactly under the line
+  function cubicBezier(x1, y1, x2, y2) {
+    const cx = 3 * x1, bx = 3 * (x2 - x1) - cx, ax = 1 - cx - bx;
+    const cy = 3 * y1, by = 3 * (y2 - y1) - cy, ay = 1 - cy - by;
+    const X = (t) => ((ax * t + bx) * t + cx) * t;
+    const Y = (t) => ((ay * t + by) * t + cy) * t;
+    return (x) => {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      let lo = 0, hi = 1, t = x;
+      for (let i = 0; i < 24; i++) { t = (lo + hi) / 2; if (X(t) < x) lo = t; else hi = t; }
+      return Y(t);
+    };
+  }
+  const ease = cubicBezier(0.16, 1, 0.3, 1);
+
+  const heroStrike = document.querySelector(".hero .strike");
+  const heroAnim = () => heroStrike.getAnimations()[0];
+  groups.push({
+    letters: splitLetters(heroStrike),
+    head() { const a = heroAnim(); return a ? ease(a.effect.getComputedTiming().progress ?? 0) : 1; },
+    busy() { const a = heroAnim(); return !!a && a.playState === "running"; },
+  });
+  let sameP = 0;
+  groups.push({
+    letters: splitLetters(document.querySelector("#same .strike")),
+    head() { return Math.min(1, Math.max(0, (sameP - 0.12) / 0.3)); },
+    busy() { return false; },
+  });
+  const remeasure = () => groups.forEach(measure);
+  remeasure();
+  document.fonts?.ready.then(remeasure);
+
+  let running = false, last = 0;
+  function step(now) {
+    const dt = Math.min(0.033, (now - last) / 1000 || 0.016);
+    last = now;
+    let active = false;
+    for (const g of groups) {
+      const h = g.head();
+      for (const L of g.letters) {
+        if (!L.hit && h >= L.u) { L.hit = true; L.v -= KICK; }
+        else if (L.hit && h < L.u - 0.02) { L.hit = false; L.v += KICK * 0.6; }
+        L.v += (-STIFF * L.y - DAMP * L.v) * dt;
+        L.y += L.v * dt;
+        if (Math.abs(L.y) > 0.0005 || Math.abs(L.v) > 0.005) {
+          active = true;
+          L.el.style.transform = `translateY(${L.y.toFixed(4)}em) rotate(${(L.y * 30).toFixed(2)}deg)`;
+        } else if (L.y !== 0) {
+          L.y = L.v = 0;
+          L.el.style.transform = "";
+        }
+      }
+      if (g.busy()) active = true;
+    }
+    if (active) requestAnimationFrame(step); else running = false;
+  }
+  function kick() {
+    if (running) return;
+    running = true;
+    last = performance.now();
+    requestAnimationFrame(step);
+  }
+
+  // ---- Scene progress ----
   let ticking = false;
   function update() {
     ticking = false;
@@ -546,14 +716,216 @@ del, ins { text-decoration: none; }
       if (s === caseScene) {
         notes.forEach((n) => n.classList.toggle("on", p >= parseFloat(n.dataset.at)));
       }
+      if (s === sameScene && p !== sameP) { sameP = p; kick(); }
     }
   }
   const request = () => {
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   };
   addEventListener("scroll", request, { passive: true });
-  addEventListener("resize", request);
+  addEventListener("resize", () => { request(); remeasure(); });
   update();
+  kick();
+})();
+</script>
+
+<script>
+// ASCII Saturn behind the hero, in three layers: a shifting pattern field, the planet,
+// and a ring whose text reads "Websites for local businesses". Layers fade out one by one as you scroll.
+(() => {
+  const band = document.querySelector(".hero-band");
+  const canvas = band.querySelector(".ascii");
+  const ctx = canvas.getContext("2d");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const RING_TEXT = "WEBSITES FOR LOCAL BUSINESSES · ";
+  const RAMP = " .,:;-=+*#%@";
+  const INK = "29, 29, 31", GREEN = "26, 122, 74";
+  const t0 = performance.now();
+  let W = 0, H = 0, cw = 7, ch = 15, cols = 0, rows = 0, geo = null;
+
+  function resize() {
+    const dpr = Math.min(2, devicePixelRatio || 1);
+    const r = band.getBoundingClientRect();
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    const phone = W < 760;
+    const fs = phone ? 10 : 12;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = `500 ${fs}px ui-monospace, "SF Mono", Menlo, Consolas, monospace`;
+    ctx.textBaseline = "top";
+    cw = ctx.measureText("M").width;
+    ch = Math.round(fs * 1.3);
+    cols = Math.ceil(W / cw) + 1;
+    rows = Math.ceil(H / ch) + 1;
+    // Desktop: the empty lower-left quadrant beside the intro text. Phone: the open space under the intro.
+    geo = phone
+      ? { cx: W * 0.5, cy: H - 100, R: W * 0.12, a: W * 0.44 }
+      : { cx: W * 0.27, cy: H * 0.8, R: Math.min(W * 0.085, 150), a: Math.min(W * 0.25, 440) };
+    geo.b = geo.a * 0.27;
+    draw(performance.now());
+  }
+
+  const smooth = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+
+  function draw(now) {
+    const t = still ? 0 : (now - t0) / 1000;
+    const since = (now - t0) / 1000;
+    const q = Math.max(0, scrollY) / Math.max(1, H * 0.75);
+    // Fade in by layer on load, fade out by layer on scroll: pattern first, then ring, then planet
+    const fade = {
+      pattern: (still ? 1 : smooth(0.9, 1.7, since)) * (1 - smooth(0, 0.35, q)),
+      ring: (still ? 1 : smooth(0.5, 1.3, since)) * (1 - smooth(0.2, 0.6, q)),
+      planet: (still ? 1 : smooth(0.15, 0.95, since)) * (1 - smooth(0.4, 0.85, q)),
+    };
+    ctx.clearRect(0, 0, W, H);
+    if (fade.pattern + fade.ring + fade.planet < 0.01) return;
+
+    const { cx, cy, R, a, b } = geo;
+    const planet = Array.from({ length: rows }, () => new Array(cols).fill(" "));
+    const ring = Array.from({ length: rows }, () => new Array(cols).fill(" "));
+    const text = Array.from({ length: rows }, () => new Array(cols).fill(" "));
+    const used = Array.from({ length: rows }, () => new Uint8Array(cols));
+    const Lx = -0.52, Ly = -0.58, Lz = 0.62;
+
+    for (let j = 0; j < rows; j++) {
+      const y = (j + 0.5) * ch;
+      for (let i = 0; i < cols; i++) {
+        const x = (i + 0.5) * cw;
+        const dx = x - cx, dy = y - cy;
+        const inPlanet = dx * dx + dy * dy < R * R;
+        const rr = Math.sqrt((dx / a) ** 2 + (dy / b) ** 2);
+        const inRing = rr > 0.5 && rr < 1 && !(rr > 0.69 && rr < 0.73);
+        const front = dy > 0;
+        if (inRing && (front || !inPlanet)) {
+          ring[j][i] = rr < 0.6 ? "." : rr < 0.69 ? ":" : rr < 0.86 ? "=" : "-";
+          used[j][i] = 1;
+        } else if (inPlanet) {
+          const nx = dx / R, ny = dy / R, nz = Math.sqrt(Math.max(0, 1 - nx * nx - ny * ny));
+          let lum = Math.max(0, nx * Lx + ny * Ly + nz * Lz);
+          const bands = 0.5 + 0.5 * Math.sin(ny * 9 + Math.sin(nx * 3 + t * 0.6) * 0.7 + t * 0.15);
+          lum *= 0.62 + 0.38 * bands;
+          planet[j][i] = RAMP[Math.min(RAMP.length - 1, 1 + Math.floor(lum * (RAMP.length - 1)))];
+          used[j][i] = 1;
+        }
+      }
+    }
+
+    // Ring text: walk the ellipse and drop one glyph each time the path enters a new cell.
+    // Walking right-to-left across the back makes the front (lower) arc read left to right.
+    const rt = 0.795, shift = Math.floor(t * 5);
+    let k = 0, pi = -1, pj = -1;
+    for (let s = 0; s < 4000; s++) {
+      const th = Math.PI - (s / 4000) * Math.PI * 2;
+      const x = cx + a * rt * Math.cos(th), y = cy + b * rt * Math.sin(th);
+      const i = Math.floor(x / cw), j = Math.floor(y / ch);
+      if (i === pi && j === pj) continue;
+      pi = i; pj = j;
+      if (i < 0 || j < 0 || i >= cols || j >= rows) { k++; continue; }
+      const dx = x - cx, dy = y - cy;
+      if (dy < 0 && dx * dx + dy * dy < R * R) { k++; continue; }
+      text[j][i] = RING_TEXT[(k + shift) % RING_TEXT.length];
+      ring[j][i] = " ";
+      planet[j][i] = " ";
+      used[j][i] = 1;
+      k++;
+    }
+
+    // The pattern layer: three crossing waves, always moving, kept sparse so the headline stays readable
+    const pattern = [];
+    for (let j = 0; j < rows; j++) {
+      let line = "";
+      for (let i = 0; i < cols; i++) {
+        if (used[j][i]) { line += " "; continue; }
+        const v = Math.sin(i * 0.21 + t * 0.9) + Math.sin(j * 0.37 - t * 0.6) + Math.sin((i + j) * 0.11 + t * 0.4);
+        line += v > 2.1 ? "+" : v > 1.6 ? ":" : v > 1.15 ? "·" : " ";
+      }
+      pattern.push(line);
+    }
+
+    const paint = (lines, rgb, alpha) => {
+      if (alpha <= 0.002) return;
+      ctx.fillStyle = `rgba(${rgb}, ${alpha})`;
+      for (let j = 0; j < rows; j++) ctx.fillText(typeof lines[j] === "string" ? lines[j] : lines[j].join(""), 0, j * ch);
+    };
+    paint(pattern, INK, 0.11 * fade.pattern);
+    paint(planet, INK, 0.2 * fade.planet);
+    paint(ring, INK, 0.16 * fade.ring);
+    paint(text, GREEN, 0.62 * fade.ring);
+  }
+
+  let visible = true, lastDraw = 0;
+  function loop(now) {
+    if (!visible || document.hidden) return;
+    if (now - lastDraw > 41) { lastDraw = now; draw(now); }
+    requestAnimationFrame(loop);
+  }
+  new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (visible && !still) requestAnimationFrame(loop);
+  }).observe(band);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden && visible && !still) requestAnimationFrame(loop); });
+  if (still) addEventListener("scroll", () => requestAnimationFrame(draw), { passive: true });
+  addEventListener("resize", resize);
+  document.fonts?.ready.then(resize);
+  resize();
+})();
+</script>
+
+<script>
+// Mockup form: sends the request to Justin's inbox through FormSubmit (no account or server needed)
+(() => {
+  const form = document.getElementById("mockup");
+  const status = form.querySelector(".status");
+  const button = form.querySelector("button");
+  const ENDPOINT = "https://formsubmit.co/ajax/11justinchen@gmail.com";
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  document.querySelectorAll('a[href="#mockup"]').forEach((link) =>
+    link.addEventListener("click", () => setTimeout(() => form.elements.name.focus({ preventScroll: true }), 700))
+  );
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = Object.fromEntries(new FormData(form));
+    if (f._honey) return;
+    form.querySelectorAll("[aria-invalid]").forEach((el) => el.removeAttribute("aria-invalid"));
+    const missing = ["name", "business", "email"].filter((k) => !String(f[k] || "").trim());
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(f.email || "").trim());
+    if (missing.length || !emailOk) {
+      const bad = missing.length ? missing : ["email"];
+      bad.forEach((k) => form.elements[k].setAttribute("aria-invalid", "true"));
+      status.className = "status err";
+      status.textContent = missing.length ? "Please fill in your name, business, and email." : "Please enter a valid email address.";
+      form.elements[bad[0]].focus();
+      return;
+    }
+    button.disabled = true;
+    button.textContent = "Sending…";
+    status.className = "status";
+    status.textContent = "";
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: f.name.trim(), business: f.business.trim(), email: f.email.trim(),
+          link: (f.link || "").trim(), message: (f.message || "").trim(),
+          _subject: `New mockup request: ${f.business.trim()}`, _template: "table", _captcha: "false",
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || String(data.success) !== "true") throw new Error(data.message || `HTTP ${res.status}`);
+      form.classList.add("done");
+      status.innerHTML = `<b>Thanks, ${esc(f.name.trim())}.</b> I got your request and will send your mockup to ${esc(f.email.trim())}.`;
+    } catch (err) {
+      console.warn("Mockup form:", err);
+      button.disabled = false;
+      button.textContent = "Request my free mockup";
+      status.className = "status err";
+      status.textContent = "That didn't go through. Try again, or email me at 11justinchen@gmail.com.";
+    }
+  });
 })();
 </script>
 
