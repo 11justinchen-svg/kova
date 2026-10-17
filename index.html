@@ -547,9 +547,14 @@ del, ins { text-decoration: none; }
 .notes b .pl { color: var(--add); }
 .notes p { margin: 4px 0 0; font-size: 15px; line-height: 1.45; color: #3A3A3C; }
 
-/* ---------- Scene 5: how it works ---------- */
+/* ---------- Scene 5: how it works, on the gradient ---------- */
+.how-band { position: relative; isolation: isolate; overflow: hidden; background: #8FDDB4; }
+.how-band .sg { position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transition: opacity 0.9s var(--ease); }
+.how-band .sg.ready { opacity: 1; }
 .how { padding-block: clamp(96px, 16vh, 180px); }
-.how .eyebrow { color: var(--mute); }
+.how .eyebrow { color: var(--ink); }
+.how .steps li { border-color: rgb(29 29 31 / 0.35); }
+.how .steps li::before { color: var(--ink); }
 .steps { list-style: none; margin: 24px 0 0; padding: 0; counter-reset: s; }
 .steps li {
   counter-increment: s;
@@ -572,6 +577,49 @@ del, ins { text-decoration: none; }
 .steps li:nth-child(2) { padding-left: clamp(0px, 8vw, 140px); }
 .steps li:nth-child(3) { padding-left: clamp(0px, 16vw, 280px); }
 
+/* ---------- Pricing ---------- */
+.pricing { padding-block: clamp(96px, 14vh, 160px); }
+.pricing .eyebrow { color: var(--mute); }
+.pricing h2 { font-size: clamp(40px, 6vw, 96px); margin: 10px 0 clamp(32px, 6vh, 56px); }
+.plans { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.plan {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 28px;
+  border-radius: 24px;
+  background: #FFFFFF;
+  border: 1px solid rgb(29 29 31 / 0.1);
+}
+.plan.featured { background: var(--ink); color: #F5F5F7; border-color: var(--ink); }
+.plan h3 { margin: 0; font-size: 21px; font-weight: 600; }
+.plan .tag { font-size: 14px; font-weight: 600; color: var(--add-bg); }
+.plan .price { margin: 0; font-size: clamp(48px, 5vw, 72px); font-weight: 700; letter-spacing: -0.04em; line-height: 1; }
+.plan .price small { font-size: 17px; font-weight: 400; letter-spacing: -0.022em; color: var(--mute); }
+.plan .sum { margin: 0; color: var(--mute); }
+.plan.featured .price small, .plan.featured .sum { color: #A1A1A6; }
+.plan ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.plan li { padding-left: 1.1em; text-indent: -1.1em; }
+.plan li::before { content: "+"; display: inline-block; width: 1.1em; text-indent: 0; font-weight: 600; color: var(--add); }
+.plan.featured li::before { color: var(--add-bg); }
+.plan .choose {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 1px solid var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+.plan.featured .choose { background: var(--add-bg); border-color: var(--add-bg); color: var(--ink); }
+.extras { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: 24px 40px; margin-top: clamp(48px, 8vh, 80px); }
+.extras h3 { margin: 0; font-size: clamp(24px, 2.6vw, 36px); font-weight: 700; letter-spacing: -0.028em; }
+.extras > div > p { margin: 10px 0 0; color: var(--mute); }
+.extras dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.extras dt, .extras dd { margin: 0; padding: 14px 0; border-top: 1px solid rgb(29 29 31 / 0.14); }
+.extras dt span { display: block; font-size: 15px; color: var(--mute); }
+.extras dd { text-align: right; font-weight: 600; padding-left: 24px; }
+
 /* ---------- Scene 6: finale ---------- */
 .end { background: var(--night); color: #F5F5F7; padding-block: clamp(80px, 14vh, 160px) calc(28px + env(safe-area-inset-bottom, 0px)); overflow: hidden; }
 .end .eyebrow { color: var(--add-bg); }
@@ -584,14 +632,15 @@ del, ins { text-decoration: none; }
 .form { display: grid; gap: 14px; scroll-margin-top: 32px; }
 .form label { display: grid; gap: 6px; font-size: 14px; color: #D2D2D7; }
 .form label .opt { color: #86868B; }
-.form input, .form textarea {
+.form input, .form textarea, .form select {
   font: inherit; font-size: 17px; letter-spacing: -0.022em;
   color: #F5F5F7; background: #1C1C1E;
   border: 1px solid #3A3A3C; border-radius: 12px;
   padding: 12px 14px; width: 100%;
 }
 .form textarea { resize: vertical; min-height: 96px; }
-.form input:focus, .form textarea:focus { outline: none; border-color: var(--add-bg); box-shadow: 0 0 0 3px rgb(76 195 138 / 0.28); }
+.form select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, #A1A1A6 50%), linear-gradient(135deg, #A1A1A6 50%, transparent 50%); background-position: calc(100% - 20px) 55%, calc(100% - 14px) 55%; background-size: 6px 6px; background-repeat: no-repeat; }
+.form input:focus, .form textarea:focus, .form select:focus { outline: none; border-color: var(--add-bg); box-shadow: 0 0 0 3px rgb(76 195 138 / 0.28); }
 .form [aria-invalid="true"] { border-color: #FF8A80; }
 .form button {
   justify-self: start;
@@ -620,6 +669,8 @@ del, ins { text-decoration: none; }
 
 /* ---------- Small screens ---------- */
 @media (max-width: 760px) {
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .extras { grid-template-columns: minmax(0, 1fr); }
   #hero { height: 220vh; }
   .takeover { top: 43%; }
   .hero-title { font-size: 15vw; padding-top: 92px; padding-bottom: 236px; }
@@ -904,7 +955,9 @@ del, ins { text-decoration: none; }
     </div>
   </section>
 
-  <!-- Scene 5: the process -->
+  <!-- Scene 5: the process, on the gradient -->
+  <div class="how-band" id="how">
+  <div class="sg" id="sg-how" aria-hidden="true"></div>
   <section class="how wrap" aria-label="How it works">
     <span class="eyebrow">How it works</span>
     <ol class="steps">
@@ -912,6 +965,68 @@ del, ins { text-decoration: none; }
       <li><p class="disp">You decide if it's right for you.</p></li>
       <li><p class="disp">I build it, launch it, and hand it over.</p></li>
     </ol>
+  </section>
+  </div>
+
+  <!-- Pricing -->
+  <section class="pricing wrap" id="pricing" aria-label="Pricing">
+    <span class="eyebrow">Pricing</span>
+    <h2 class="disp">Simple prices.</h2>
+    <ul class="plans">
+      <li class="plan">
+        <h3>Base</h3>
+        <p class="price">$179 <small>one time</small></p>
+        <p class="sum">Your website, built from scratch.</p>
+        <ul>
+          <li>A custom website designed around your business</li>
+          <li>Looks right on phones, tablets, and computers</li>
+          <li>A free homepage mockup before you pay anything</li>
+          <li>A week after launch for any changes you want</li>
+        </ul>
+        <a class="choose" href="#mockup" data-plan="Base · $179">Choose Base ›</a>
+      </li>
+      <li class="plan featured">
+        <h3>Plus <span class="tag">Recommended</span></h3>
+        <p class="price">$279 <small>one time</small></p>
+        <p class="sum">Your website, plus your spot on Google.</p>
+        <ul>
+          <li>Everything in Base</li>
+          <li>Your Google Business Profile set up and filled in</li>
+          <li>Photos, hours, and a link to your new site on Google Maps</li>
+          <li>Two weeks after launch for any changes you want</li>
+        </ul>
+        <a class="choose" href="#mockup" data-plan="Plus · $279">Choose Plus ›</a>
+      </li>
+      <li class="plan">
+        <h3>Super</h3>
+        <p class="price">$369 <small>one time</small></p>
+        <p class="sum">Everything, and then some.</p>
+        <ul>
+          <li>Everything in Plus</li>
+          <li>Up to 5 pages, like a menu, services, and about page</li>
+          <li>An online booking or ordering link set up for you</li>
+          <li>A printed QR code card that asks customers for Google reviews</li>
+          <li>A month after launch for any changes you want</li>
+        </ul>
+        <a class="choose" href="#mockup" data-plan="Super · $369">Choose Super ›</a>
+      </li>
+    </ul>
+    <div class="extras">
+      <div>
+        <h3>Possible added costs.</h3>
+        <p>Only if you need them. I'll tell you before anything is added. Pay with Venmo or Apple Pay.</p>
+      </div>
+      <dl>
+        <dt>Your domain name<span>Like yourbusiness.com. Paid straight to the registrar, so it's yours.</span></dt>
+        <dd>About $12–20 a year</dd>
+        <dt>Hosting<span>Most small business sites can be hosted for free.</span></dt>
+        <dd>$0 for most sites</dd>
+        <dt>Extra pages<span>Beyond what your plan includes.</span></dt>
+        <dd>$40 each</dd>
+        <dt>Changes after your included time<span>Updates to text, photos, hours, or prices.</span></dt>
+        <dd>$25 per change</dd>
+      </dl>
+    </div>
   </section>
 </main>
 
@@ -930,6 +1045,14 @@ del, ins { text-decoration: none; }
         </label>
         <label for="f-business">Business name
           <input id="f-business" name="business" autocomplete="organization" required>
+        </label>
+        <label for="f-plan">Plan
+          <select id="f-plan" name="plan">
+            <option>Not sure yet</option>
+            <option>Base · $179</option>
+            <option>Plus · $279</option>
+            <option>Super · $369</option>
+          </select>
         </label>
         <label for="f-email">Email
           <input id="f-email" name="email" type="email" autocomplete="email" required>
@@ -1361,6 +1484,7 @@ del, ins { text-decoration: none; }
     const target = id.length > 1 && document.querySelector(id);
     if (!target) return;
     e.preventDefault();
+    if (link.dataset.plan) form.elements.plan.value = link.dataset.plan;
     const done = () => { if (id === "#mockup") form.elements.name.focus({ preventScroll: true }); };
     if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1.8, onComplete: done });
     else { target.scrollIntoView({ behavior: reduced ? "auto" : "smooth" }); setTimeout(done, reduced ? 0 : 900); }
@@ -1392,7 +1516,7 @@ del, ins { text-decoration: none; }
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name: f.name.trim(), business: f.business.trim(), email: f.email.trim(),
-          link: (f.link || "").trim(), message: (f.message || "").trim(),
+          plan: f.plan, link: (f.link || "").trim(), message: (f.message || "").trim(),
           _subject: `New mockup request: ${f.business.trim()}`, _template: "table", _captcha: "false",
         }),
       });
@@ -1424,8 +1548,7 @@ del, ins { text-decoration: none; }
 }
 </script>
 <script type="module">
-const scene = document.getElementById("who");
-const target = document.getElementById("sg");
+// The same gradient appears in two places: inside the "+" in the about scene, and behind "How it works"
 const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // Fetch the code while the browser is idle after load, so it's ready long before anyone scrolls here
@@ -1437,14 +1560,13 @@ const load = () => modules ??= Promise.all([
 ]);
 addEventListener("load", () => (window.requestIdleCallback || setTimeout)(() => load().catch(() => {}), { timeout: 2500 }));
 
-// Fade the gradient in only after its canvas has drawn, so the flat green plus never cuts to a blank frame
-new MutationObserver((_, obs) => {
-  if (!target.querySelector("canvas")) return;
-  obs.disconnect();
-  requestAnimationFrame(() => requestAnimationFrame(() => target.classList.add("ready")));
-}).observe(target, { childList: true, subtree: true });
-
-async function mountGradient() {
+async function mountGradient(target) {
+  // Fade in only after the canvas has drawn, so the flat green underneath never cuts to a blank frame
+  new MutationObserver((_, obs) => {
+    if (!target.querySelector("canvas")) return;
+    obs.disconnect();
+    requestAnimationFrame(() => requestAnimationFrame(() => target.classList.add("ready")));
+  }).observe(target, { childList: true, subtree: true });
   const [{ createElement: h }, { createRoot }, { ShaderGradientCanvas, ShaderGradient }] = await load();
   createRoot(target).render(
     h(ShaderGradientCanvas, {
@@ -1471,14 +1593,16 @@ async function mountGradient() {
   );
 }
 
-// If WebGL or the CDN fails, the flat green underneath stays, so the scene still reads
-const near = new IntersectionObserver((entries) => {
-  if (entries.some((e) => e.isIntersecting)) {
-    near.disconnect();
-    mountGradient().catch(() => {});
-  }
-}, { rootMargin: "250% 0px" });
-near.observe(scene);
+// If WebGL or the CDN fails, the flat green underneath stays, so each section still reads
+for (const [sectionId, targetId] of [["who", "sg"], ["how", "sg-how"]]) {
+  const near = new IntersectionObserver((entries) => {
+    if (entries.some((e) => e.isIntersecting)) {
+      near.disconnect();
+      mountGradient(document.getElementById(targetId)).catch(() => {});
+    }
+  }, { rootMargin: "250% 0px" });
+  near.observe(document.getElementById(sectionId));
+}
 </script>
 </body>
 </html>
