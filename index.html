@@ -21,13 +21,14 @@
                         Scrolling pushes the camera into Saturn and splits the headline apart; late in the scroll the
                         layers dissolve one at a time and the background turns from space to paper.
    2 #same   260/200vh  "look the same." is struck while you scroll, then "+ should look like the business." rises in.
-   3 #who    280/220vh  A green "+" grows until it becomes the background, a ShaderGradient fades in over it,
-                        and the credentials rise in. The gradient code loads only when this scene is near.
-   4 #case   400/320vh  The bakery's own world: the frame pushes in, a "+" handle wipes a generic site into a cartoon one, then the sun
+   3 #who    380/290vh  A green "+" grows until it becomes the background, a ShaderGradient fades in over it,
+                        and the credentials rise in. Then the bakery's night rises over it as an ASCII tide with a
+                        torn, uneven edge, so the next scene starts from the same dark sky. Gradient code loads near.
+   4 #case   640/500vh  The bakery's own world: the frame pushes in, a "+" handle wipes a generic site into a cartoon one, then the sun
                         rises behind the bread ("Bread before sunrise.") and the whole scene goes from night to dawn.
-   5 #how    400/320vh  Dawn carries over; a cartoon "+" grows with the gradient inside until it fills the screen,
-                        "Three steps. No pressure." rises, and three step cards slide up and stack, each playing a
-                        small illustration (wireframe to design, a client chat, a "live" check).
+                        Then the same scene becomes "How it works": the label and headline swap in place, the three
+                        notes flip over into the three steps, the mockup acts out each step, and dawn turns to morning.
+   5 Pricing auto       Three plans and the added costs.
    6 Finale  auto       The mockup request form and a full-width "Justin+". */
 :root {
   --paper: #F5F5F7;     /* Apple's light grey surface */
@@ -252,9 +253,10 @@ del, ins { text-decoration: none; }
 }
 
 /* ---------- Scene 3: the "+" takeover, then credentials ---------- */
-#who { height: 280vh; --k: clamp(0, (var(--p) - 0.04) / 0.42, 1); --s: calc(1 + var(--k) * var(--k) * 70); }
+/* --q is the about scene's own progress; the last third of the scroll belongs to the ASCII tide */
+#who { height: 380vh; --q: clamp(0, var(--p) / 0.64, 1); --k: clamp(0, (var(--q) - 0.04) / 0.42, 1); --s: calc(1 + var(--k) * var(--k) * 70); }
 #who .stage { background: var(--paper); }
-/* The "+" takeover, shared by the about scene and "How it works". Each scene sets --s, the plus's scale. */
+/* The "+" takeover. The scene sets --s, the plus's scale. */
 .plus {
   position: absolute;
   left: 50%; top: 50%;
@@ -292,33 +294,44 @@ del, ins { text-decoration: none; }
 #who .creds {
   position: relative;
   z-index: 1;
-  opacity: clamp(0, (var(--p) - 0.42) / 0.14, 1);
+  opacity: clamp(0, (var(--q) - 0.42) / 0.14, 1);
 }
 #who h2 { font-size: clamp(40px, 6.4vw, 112px); margin: 10px 0 clamp(28px, 6vh, 64px); overflow: hidden; padding-bottom: 0.1em; }
-#who h2 .rise { display: block; transform: translateY(calc((1 - clamp(0, (var(--p) - 0.44) / 0.14, 1)) * 105%)); }
+#who h2 .rise { display: block; transform: translateY(calc((1 - clamp(0, (var(--q) - 0.44) / 0.14, 1)) * 105%)); }
 .facts { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
 .facts li {
   border-top: 2px solid var(--ink);
   padding-top: 18px;
-  transform: translateY(calc((1 - clamp(0, (var(--p) - var(--at)) / 0.12, 1)) * 24px));
+  transform: translateY(calc((1 - clamp(0, (var(--q) - var(--at)) / 0.12, 1)) * 24px));
 }
 .facts b { display: block; font-size: clamp(24px, 2.6vw, 40px); font-weight: 700; line-height: 1.08; letter-spacing: -0.028em; }
 .facts span { display: block; margin-top: 10px; font-size: 17px; }
+/* The ASCII tide: a canvas over the whole stage, drawn only while the night is rising */
+.tide { position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%; pointer-events: none; }
 
 /* ---------- Scene 4: the bakery's own world, from night to "Bread before sunrise." ---------- */
 @property --ray { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+/* --q is the bakery story's own progress (the first 56% of the scroll). The rest turns the same scene into
+   "How it works": --hs swaps the label and headline, --f1..3 flip the notes, --day brightens the sky. */
 #case {
-  height: 400vh;
-  --sun: clamp(0, (var(--p) - 0.5) / 0.32, 1);
+  height: 640vh;
+  --q: clamp(0, var(--p) / 0.56, 1);
+  --sun: clamp(0, (var(--q) - 0.5) / 0.32, 1);
+  --hs: clamp(0, (var(--p) - 0.57) / 0.06, 1);
+  --f1: clamp(0, (var(--p) - 0.58) / 0.06, 1);
+  --f2: clamp(0, (var(--p) - 0.61) / 0.06, 1);
+  --f3: clamp(0, (var(--p) - 0.64) / 0.06, 1);
+  --day: clamp(0, (var(--p) - 0.56) / 0.4, 1);
   color: var(--c-line);
 }
-/* One tall sky gradient slides up as the sun rises, so night turns to dawn through violet and pink, never mud */
+/* One tall sky gradient slides up as the sun rises, so night turns to dawn through violet and pink, never mud.
+   Its last quarter is morning, reached while the steps play. */
 #case .stage {
   padding-block: 64px 28px;
   isolation: isolate;
-  background: linear-gradient(180deg, #0B1033 0%, #1B2A6B 30%, #6A3C8C 48%, #E94F64 62%, #FF8A5B 80%, #FFC56B 100%);
-  background-size: 100% 300%;
-  background-position: 50% calc(var(--sun) * 100%);
+  background: linear-gradient(180deg, #0B1033 0%, #1B2A6B 22.5%, #6A3C8C 36%, #E94F64 46.5%, #FF8A5B 60%, #FFC56B 75%, #FFF3DC 100%);
+  background-size: 100% 400%;
+  background-position: 50% calc((var(--sun) * 2 / 3 + var(--day) / 3) * 100%);
 }
 .case-inner { display: flex; flex-direction: column; gap: 26px; }
 .sunburst {
@@ -329,7 +342,7 @@ del, ins { text-decoration: none; }
   background: repeating-conic-gradient(from var(--ray) at 50% 118%, rgb(255 241 214 / 0.55) 0deg 6deg, transparent 6deg 15deg);
   -webkit-mask-image: radial-gradient(circle at 50% 118%, #000 25%, transparent 78%);
   mask-image: radial-gradient(circle at 50% 118%, #000 25%, transparent 78%);
-  opacity: calc(var(--sun) * 0.7);
+  opacity: calc(var(--sun) * 0.7 * (1 - 0.5 * var(--day)));
   animation: rays 50s linear infinite;
 }
 @keyframes rays { to { --ray: 360deg; } }
@@ -360,7 +373,25 @@ del, ins { text-decoration: none; }
   paint-order: stroke fill;
   text-shadow: 0.06em 0.06em 0 var(--c-line);
 }
-#case .head p { margin: 0; padding: 6px 14px; border-radius: 999px; background: var(--c-line); color: var(--c-cream); font-size: 15px; }
+#case .head p { margin: 0; padding: 6px 14px; border-radius: 999px; background: var(--c-line); color: var(--c-cream); font-size: 15px; opacity: calc(1 - clamp(0, (var(--p) - 0.56) / 0.04, 1)); }
+/* The label and headline swap in place: the old words rise out of their box as the new ones rise in */
+#case .head .eyebrow { display: inline-grid; overflow: hidden; }
+#case .head h2 { display: grid; clip-path: inset(-0.15em -0.3em -0.16em -0.15em); }
+.sw-a, .sw-b { grid-area: 1 / 1; }
+.sw-a { transform: translateY(calc(var(--hs) * -150%)); }
+.sw-b { transform: translateY(calc((1 - var(--hs)) * 150%)); }
+#case .h-how, #case .how-steps h2 {
+  align-self: end;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-stretch: normal;
+  font-size: clamp(28px, 4.2vw, 72px);
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
 .casegrid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 17rem;
@@ -370,7 +401,7 @@ del, ins { text-decoration: none; }
 }
 /* Push-in: the browser frame starts small and low, then rises into place before anything else happens */
 .frame-wrap {
-  --in: clamp(0, var(--p) / 0.14, 1);
+  --in: clamp(0, var(--q) / 0.14, 1);
   position: relative;
   min-width: 0;
   transform-origin: 50% 0;
@@ -388,7 +419,7 @@ del, ins { text-decoration: none; }
   overflow: hidden;
   background: #fff;
   margin-inline: auto;
-  --w: clamp(0, (var(--p) - 0.16) / 0.36, 1);
+  --w: clamp(0, (var(--q) - 0.16) / 0.36, 1);
 }
 .urlbar {
   position: absolute; z-index: 3; top: 0; left: 0; right: 0;
@@ -439,6 +470,9 @@ del, ins { text-decoration: none; }
 .a-stars g:nth-child(2n) use { animation-delay: 0.9s; }
 .a-stars g:nth-child(3n) use { animation-delay: 1.6s; }
 .a-sun { transform: translateY(calc((1 - var(--sun)) * 430px)); }
+/* Step 2: "Can the sun be bigger?" and it grows */
+.a-grow { transform-box: view-box; transform-origin: 1060px 600px; transition: transform 0.9s var(--pop); }
+.a-grow.on { transform: scale(1.3); }
 .a-rays { transform-box: view-box; transform-origin: 1060px 600px; animation: spin 36s linear infinite; }
 .steam path { animation: steam 2.8s ease-in-out infinite; }
 .steam path:nth-child(2) { animation-delay: 0.7s; }
@@ -535,139 +569,55 @@ del, ins { text-decoration: none; }
 @keyframes bob { 50% { transform: translateY(-9px) rotate(3deg); } }
 .stk svg { display: block; width: 100%; height: auto; overflow: visible; filter: drop-shadow(5px 5px 0 var(--c-line)); }
 .stk .spin { transform-box: view-box; transform-origin: 70px 70px; animation: spin 16s linear infinite; }
+/* Step 2's chat, drawn as cartoon speech bubbles over the mockup */
+.bubble {
+  margin: 0;
+  padding: 10px 16px;
+  border: 3px solid var(--c-line);
+  border-radius: 20px 20px 20px 6px;
+  background: var(--c-cream);
+  box-shadow: 5px 5px 0 var(--c-line);
+  font-size: clamp(14px, 1.3vw, 19px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--c-line);
+  white-space: nowrap;
+}
+.bubble.me { background: var(--add-bg); border-radius: 20px 20px 6px 20px; }
 
-/* Notes become outlined cards that pop in as the story reaches them */
+/* Notes are outlined cards that pop in as the story reaches them. Each card is two-sided: the back holds
+   a step, and the card flips over when the scene turns into "How it works". */
 .notes { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
 .notes li {
+  perspective: 900px;
+  transform-origin: 15% 50%;
+  transition: transform 0.7s var(--pop), opacity 0.4s;
+}
+.notes li:nth-child(1) { --f: var(--f1); }
+.notes li:nth-child(2) { --f: var(--f2); transform: rotate(1.2deg); }
+.notes li:nth-child(3) { --f: var(--f3); transform: rotate(-0.8deg); }
+.js .notes li:not(.on) { opacity: 0.22; transform: translateX(24px) scale(0.9) rotate(-3deg); }
+.flip { display: grid; transform-style: preserve-3d; transform: rotateX(calc(var(--f) * -180deg)); }
+.face {
+  grid-area: 1 / 1;
   padding: 14px 16px 16px;
   border: 3px solid var(--c-line);
   border-radius: 18px;
   background: var(--c-cream);
   box-shadow: 6px 6px 0 var(--c-line);
-  transform-origin: 15% 50%;
-  transition: transform 0.7s var(--pop), opacity 0.4s;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transition: background-color 0.4s, transform 0.5s var(--pop), box-shadow 0.5s var(--pop);
 }
-.notes li:nth-child(2) { transform: rotate(1.2deg); }
-.notes li:nth-child(3) { transform: rotate(-0.8deg); }
-.js .notes li:not(.on) { opacity: 0.22; transform: translateX(24px) scale(0.9) rotate(-3deg); }
-.notes b { display: block; font-size: 19px; font-weight: 700; color: var(--c-line); }
-.notes b .pl { color: var(--add); }
-.notes p { margin: 4px 0 0; font-size: 15px; line-height: 1.45; color: #3A3A3C; }
-
-/* ---------- Scene 5: how it works. Dawn carries over from the bakery scene, a cartoon "+" grows with the
-   gradient inside it until it fills the screen, then three step cards slide up and stack. ---------- */
-#how {
-  height: 400vh;
-  --k: clamp(0, var(--p) / 0.3, 1);
-  --s: calc(1 + var(--k) * var(--k) * 70);
-  --e1: clamp(0, (var(--p) - 0.34) / 0.18, 1);
-  --e2: clamp(0, (var(--p) - 0.56) / 0.18, 1);
-  --e3: clamp(0, (var(--p) - 0.76) / 0.18, 1);
-}
-#how .stage { display: block; isolation: isolate; background: #FFC56B; }
-/* The same sun rays as the end of the bakery scene, centered just past the seam, so the two scenes join */
-.how-rays {
-  background: repeating-conic-gradient(from var(--ray) at 50% 18%, rgb(255 241 214 / 0.55) 0deg 6deg, transparent 6deg 15deg);
-  -webkit-mask-image: radial-gradient(circle at 50% 18%, #000 25%, transparent 78%);
-  mask-image: radial-gradient(circle at 50% 18%, #000 25%, transparent 78%);
-  opacity: calc(0.7 * (1 - var(--k)));
-}
-#how .plus, #how .plus-clip { z-index: 0; }
-.plus-line {
-  position: absolute;
-  left: 50%; top: 50%;
-  width: 14vmin; height: 14vmin;
-  z-index: 1;
-  overflow: visible;
-  transform: translate(-50%, -50%) scale(var(--s));
-  fill: none;
-  stroke: var(--c-line);
-  /* non-scaling-stroke ignores CSS transforms, so divide by the scale to keep a steady cartoon outline */
-  stroke-width: calc(6px / var(--s));
-  stroke-linejoin: round;
-  opacity: calc(1 - clamp(0, (var(--k) - 0.7) / 0.3, 1));
-  pointer-events: none;
-}
-.how-inner {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding-block: clamp(64px, 10vh, 104px) clamp(24px, 4vh, 40px);
-}
-.how-head { opacity: clamp(0, (var(--p) - 0.26) / 0.06, 1); }
-.how-head .eyebrow { color: var(--ink); }
-.how-head h2 { font-size: clamp(36px, 5vw, 80px); margin: 8px 0 0; overflow: hidden; padding-bottom: 0.1em; }
-.how-head h2 .rise { display: block; transform: translateY(calc((1 - clamp(0, (var(--p) - 0.27) / 0.1, 1)) * 105%)); }
-.cards { position: relative; flex: 1; min-height: 0; list-style: none; margin: clamp(8px, 1.5vh, 20px) 0 0; padding: 0; }
-/* Each card rises from below; the ones underneath shrink and dim a little, so the stack has depth */
-.step-card {
-  position: absolute;
-  inset: 5.2vh 0 0; /* room for the two cards peeking out above */
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-  gap: clamp(20px, 4vw, 56px);
-  align-items: center;
-  padding: clamp(22px, 4vw, 56px);
-  border-radius: 32px;
-  background: var(--paper);
-  box-shadow: 0 30px 60px -32px rgb(29 29 31 / 0.45);
-  transform-origin: 50% 0;
-  transform: translateY(calc((1 - var(--e)) * 110vh - var(--behind) * 2.6vh)) scale(calc(1 - var(--behind) * 0.05));
-}
-.step-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--ink); opacity: calc(var(--behind) * 0.12); pointer-events: none; }
-.step-card:nth-child(1) { --e: var(--e1); --behind: calc(var(--e2) + var(--e3)); }
-.step-card:nth-child(2) { --e: var(--e2); --behind: var(--e3); }
-.step-card:nth-child(3) { --e: var(--e3); --behind: 0; }
-.step-card .num { font-size: clamp(56px, 7vw, 120px); font-weight: 700; letter-spacing: -0.05em; line-height: 0.9; color: var(--add); }
-.step-card h3 { margin: 14px 0 0; font-size: clamp(28px, 3.4vw, 56px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
-.step-card p { margin: 14px 0 0; max-width: 30ch; font-size: clamp(16px, 1.4vw, 21px); color: var(--mute); }
-
-/* Card illustrations: each plays once when its card settles */
-.viz {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  max-height: 100%;
-  border-radius: 20px;
-  background: #FBFBFD;
-  border: 1px solid rgb(29 29 31 / 0.1);
-  overflow: hidden;
-}
-.viz * { transition: all 0.8s var(--ease); }
-.vurl { position: absolute; top: 0; left: 0; right: 0; height: 13%; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgb(29 29 31 / 0.1); font-size: clamp(10px, 1vw, 13px); color: var(--mute); background: var(--paper); }
-/* 1. A wireframe that turns into a design */
-.viz-mock .vsite { position: absolute; inset: 13% 0 0; background: #F2F2F5; }
-.viz-mock .b { position: absolute; left: 8%; border-radius: 6px; background: #DCDCE1; }
-.viz-mock .b1 { top: 8%; width: 22%; height: 6%; }
-.viz-mock .b2 { top: 26%; width: 56%; height: 11%; }
-.viz-mock .b3 { top: 41%; width: 40%; height: 11%; }
-.viz-mock .b4 { top: 60%; width: 24%; height: 9%; border-radius: 999px; }
-.viz-mock .vsun { position: absolute; right: 14%; top: 30%; width: 26%; aspect-ratio: 1; border-radius: 50%; background: #DCDCE1; transform: translateY(40%); }
-.viz-mock .vhill { position: absolute; left: -10%; right: -10%; bottom: -30%; height: 55%; border-radius: 50% 50% 0 0; background: #E5E5EA; }
-.on .viz-mock .vsite { background: #FFC56B; }
-.on .viz-mock .b1 { background: var(--c-line); transition-delay: 0.1s; }
-.on .viz-mock .b2, .on .viz-mock .b3 { background: var(--c-cream); box-shadow: 0 0 0 3px var(--c-line), 5px 5px 0 3px var(--c-line); transition-delay: 0.25s; }
-.on .viz-mock .b4 { background: var(--c-red); box-shadow: 0 0 0 3px var(--c-line); transition-delay: 0.4s; }
-.on .viz-mock .vsun { background: var(--c-sun); box-shadow: 0 0 0 3px var(--c-line); transform: none; transition-delay: 0.5s; }
-.on .viz-mock .vhill { background: #F2B544; box-shadow: 0 0 0 3px var(--c-line); transition-delay: 0.3s; }
-/* 2. A quick back-and-forth: changes are part of the deal */
-.viz-chat { display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 7%; }
-.bub { margin: 0; max-width: 78%; padding: 10px 14px; border-radius: 18px; font-size: clamp(13px, 1.25vw, 17px); line-height: 1.3; opacity: 0; transform: translateY(12px) scale(0.92); }
-.bub.them { align-self: flex-start; background: #E9E9EE; color: var(--ink); border-bottom-left-radius: 6px; }
-.bub.me { align-self: flex-end; background: var(--add-bg); color: var(--ink); border-bottom-right-radius: 6px; }
-.on .bub { opacity: 1; transform: none; transition-timing-function: var(--pop); }
-.on .bub:nth-child(2) { transition-delay: 0.45s; }
-.on .bub:nth-child(3) { transition-delay: 0.9s; }
-/* 3. Live, on their own domain */
-.viz-live { display: grid; place-items: center; align-content: center; gap: 14px; padding: 7%; }
-.viz-live .vurl { position: static; height: auto; padding: 12px 18px; border: 1px solid rgb(29 29 31 / 0.14); border-radius: 999px; font-size: clamp(13px, 1.25vw, 17px); color: var(--ink); background: #fff; }
-.viz-live .check { width: 30%; aspect-ratio: 1; border-radius: 50%; display: grid; place-items: center; background: var(--add-bg); transform: scale(0) rotate(-30deg); }
-.viz-live .check svg { width: 52%; fill: none; stroke: var(--ink); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
-.viz-live .own { margin: 0; font-size: clamp(13px, 1.2vw, 16px); color: var(--mute); text-align: center; }
-.on .viz-live .vurl { border-color: var(--add-bg); box-shadow: 0 0 0 4px rgb(76 195 138 / 0.25); }
-.on .viz-live .check { transform: none; transition-timing-function: var(--pop); transition-delay: 0.2s; }
+.face.back { transform: rotateX(180deg); }
+/* The step the mockup is acting out lifts and turns sun yellow */
+.notes li.now .back { background: var(--c-sun); transform: rotateX(180deg) translate(-3px, -3px); box-shadow: 9px 9px 0 var(--c-line); }
+.notes b, .how-steps b { display: block; font-size: 19px; font-weight: 700; color: var(--c-line); }
+.notes b .pl, .how-steps b .pl { color: var(--add); }
+.notes p, .how-steps p { margin: 4px 0 0; font-size: 15px; line-height: 1.45; color: #3A3A3C; }
+/* The real step list, for screen readers; it shows on the page only when motion is reduced */
+.how-steps { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.how-steps ol { list-style: none; margin: 0; padding: 0; }
 
 /* ---------- Pricing ---------- */
 .pricing { padding-block: clamp(96px, 14vh, 160px); }
@@ -771,11 +721,11 @@ del, ins { text-decoration: none; }
   .cue { display: none; }
   #same .disp { font-size: 12vw; }
   #same { height: 200vh; }
-  #who { height: 220vh; }
+  #who { height: 290vh; }
   .facts { grid-template-columns: minmax(0, 1fr); gap: 18px; }
   .facts li { padding-top: 12px; }
   .facts span { margin-top: 4px; font-size: 15px; }
-  #case { height: 320vh; }
+  #case { height: 500vh; }
   #case .stage { padding-block: 52px 16px; }
   .case-inner { gap: 16px; }
   #case .eyebrow { margin-bottom: 10px; font-size: 13px; }
@@ -785,40 +735,42 @@ del, ins { text-decoration: none; }
   .after h3 { max-width: 92cqw; top: 13cqh; font-size: 14cqw; }
   .stk.s-loaf, .stk.s-clock, .stk.s-sun { display: none; }
   .stk.s-badge { --x: 74% !important; --y: -16% !important; }
+  .stk.s-free, .stk.s-live { --x: 70% !important; --y: -5% !important; }
   .notes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .notes li { padding: 8px 9px 10px; border-width: 2.5px; border-radius: 12px; box-shadow: 3px 3px 0 var(--c-line); }
+  .notes .face { padding: 8px 9px 10px; border-width: 2.5px; border-radius: 12px; box-shadow: 3px 3px 0 var(--c-line); }
+  .notes li.now .back { box-shadow: 5px 5px 0 var(--c-line); }
+  .bubble { padding: 7px 11px; border-width: 2.5px; border-radius: 14px 14px 14px 5px; font-size: 13px; box-shadow: 3px 3px 0 var(--c-line); }
+  .bubble.me { border-radius: 14px 14px 5px 14px; }
   .notes b { font-size: 13px; }
   .notes p { font-size: 11.5px; }
   .before .cards { grid-template-columns: 1fr; }
-  #how { height: 320vh; }
-  .step-card { grid-template-columns: minmax(0, 1fr); align-content: center; gap: 14px; padding: 22px; border-radius: 24px; }
-  .step-card .num { font-size: 44px; }
-  .step-card h3 { margin-top: 8px; font-size: 26px; }
-  .step-card p { margin-top: 8px; font-size: 15px; }
-  .viz { aspect-ratio: 16 / 10; }
   .end .ask { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ---------- Reduced motion: no pinning, every scene shown in its finished state ---------- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .scene, #same, #who, #case, #how { height: auto; --p: 1 !important; }
+  .scene, #same, #who, #case { height: auto; --p: 1 !important; }
   #hero { height: auto; --p: 0 !important; }
   .stage { position: relative; height: auto; min-height: 0; padding-block: 96px; }
   #hero .stage { min-height: 100svh; padding-block: 0; }
   .takeover { display: none; }
   #who .stage { background: var(--add-bg); }
-  .plus, .plus-line, .how-rays { display: none; }
+  .plus { display: none; }
   .plus-clip { clip-path: none; }
-  #how .stage { background: #8FDDB4; }
-  .cards { display: grid; gap: 16px; }
-  .step-card { position: relative; inset: auto; transform: none; }
-  .step-card::after { display: none; }
-  .viz * { transition: none; }
   #same .hint { display: none; }
   .intro, .hero-title .lnin, .hero-title .strike, .cue i, .sunburst, .spark, .a-stars use, .a-rays, .steam path, .after .track, .stk .bob, .stk .spin { animation: none; }
   .stk .pop { transform: scale(1) rotate(var(--r, 0deg)); transition: none; }
   .js .notes li:not(.on) { opacity: 1; transform: none; }
+  /* The bakery story stays on its notes; the steps get their own block underneath */
+  #case { --hs: 0; --f1: 0; --f2: 0; --f3: 0; --day: 0; }
+  .stk.step-only { display: none; }
+  .a-grow.on { transform: none; }
+  .notes li, .face { transition: none; }
+  .how-steps { position: static; width: auto; height: auto; overflow: visible; clip: auto; white-space: normal; margin-top: 56px; }
+  .how-steps ol { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; margin-top: 24px; }
+  .how-steps .face { grid-area: auto; }
+  #case .how-steps h2 { margin: 8px 0 0; }
 }
 </style>
 </head>
@@ -879,11 +831,12 @@ del, ins { text-decoration: none; }
           <li style="--at:.62"><b>Builds real sites.</b><span>React, Vite, Tailwind, and plain HTML and CSS.</span></li>
         </ul>
       </div>
+      <canvas class="tide" aria-hidden="true"></canvas>
     </div>
   </section>
 
-  <!-- Scene 4: one example, told as the bakery's own sunrise -->
-  <section class="scene" id="case" data-scene aria-label="Example redesign">
+  <!-- Scene 4: one example, told as the bakery's own sunrise, which then turns into the three steps -->
+  <section class="scene" id="case" data-scene aria-label="Example redesign and how it works">
     <div class="stage">
       <div class="sunburst" aria-hidden="true"></div>
       <div class="sky" aria-hidden="true">
@@ -898,8 +851,8 @@ del, ins { text-decoration: none; }
       <div class="wrap case-inner">
       <div class="head">
         <div>
-          <span class="eyebrow">Example redesign</span>
-          <h2>Alder &amp; Rye.</h2>
+          <span class="eyebrow"><span class="sw-a">Example redesign</span><span class="sw-b" aria-hidden="true">How it works</span></span>
+          <h2><span class="sw-a">Alder &amp; Rye.</span><span class="sw-b h-how" aria-hidden="true">Three steps. No pressure.</span></h2>
         </div>
         <p>Concept mockup of a fictional bakery.</p>
       </div>
@@ -932,7 +885,7 @@ del, ins { text-decoration: none; }
                   <g transform="translate(1310 120) scale(1.8)"><use href="#spark"/></g>
                   <g transform="translate(1490 300) scale(1.2)"><use href="#spark"/></g>
                 </g>
-                <g class="a-sun">
+                <g class="a-sun"><g class="a-grow" data-at=".815">
                   <g class="a-rays" fill="#FFD23F" stroke="#1D1D1F" stroke-width="10" stroke-linejoin="round">
                     <use href="#sunray"/>
                     <use href="#sunray" transform="rotate(30 1060 600)"/>
@@ -949,7 +902,7 @@ del, ins { text-decoration: none; }
                   </g>
                   <circle cx="1060" cy="600" r="138" fill="#FFD23F" stroke="#1D1D1F" stroke-width="12"/>
                   <path d="M1004 586q14-14 28 0M1088 586q14-14 28 0M1016 640q44 34 88 0" fill="none" stroke="#1D1D1F" stroke-width="10" stroke-linecap="round"/>
-                </g>
+                </g></g>
                 <path d="M0 740C260 640 560 690 820 700C1080 710 1340 620 1600 660V1000H0Z" fill="#F2B544" stroke="#1D1D1F" stroke-width="12" stroke-linejoin="round"/>
                 <g fill="none" stroke="#1D1D1F" stroke-width="8" stroke-linecap="round">
                   <path d="M240 712V600M240 625l-18-20M240 625l18-20M240 652l-18-20M240 652l18-20M240 679l-18-20M240 679l18-20"/>
@@ -993,8 +946,8 @@ del, ins { text-decoration: none; }
             <div class="handle" aria-hidden="true"><span class="lb">Before</span><span class="la">After</span></div>
           </div>
 
-          <!-- Stickers in the bakery's style; they pop in as the story reaches them -->
-          <div class="stk s-badge" data-at=".3" aria-hidden="true" style="--x:-2%;--y:-15%;--w:clamp(84px,9vw,130px);--r:-12deg;--par:80px">
+          <!-- Stickers in the bakery's style; they pop in as the story reaches them and pop out when it turns into the steps -->
+          <div class="stk s-badge" data-at=".17" data-out=".56" aria-hidden="true" style="--x:-2%;--y:-15%;--w:clamp(84px,9vw,130px);--r:-12deg;--par:80px">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 140 140">
                 <defs><path id="badge-ring" d="M70 70m-47 0a47 47 0 1 1 94 0a47 47 0 1 1-94 0"/></defs>
@@ -1011,7 +964,7 @@ del, ins { text-decoration: none; }
               </svg>
             </div></div>
           </div>
-          <div class="stk s-sun" data-at=".64" aria-hidden="true" style="--x:87%;--y:-17%;--w:clamp(80px,8.6vw,124px);--r:10deg;--par:110px;--bd:.6s">
+          <div class="stk s-sun" data-at=".36" data-out=".56" aria-hidden="true" style="--x:87%;--y:-17%;--w:clamp(80px,8.6vw,124px);--r:10deg;--par:110px;--bd:.6s">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 140 140">
                 <defs><polygon id="sticker-ray" points="70,6 80,30 60,30"/></defs>
@@ -1025,7 +978,7 @@ del, ins { text-decoration: none; }
               </svg>
             </div></div>
           </div>
-          <div class="stk s-loaf" data-at=".5" aria-hidden="true" style="--x:-3%;--y:84%;--w:clamp(110px,12vw,170px);--r:-8deg;--par:60px;--bd:1.2s">
+          <div class="stk s-loaf" data-at=".28" data-out=".56" aria-hidden="true" style="--x:-3%;--y:84%;--w:clamp(110px,12vw,170px);--r:-8deg;--par:60px;--bd:1.2s">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 160 110">
                 <ellipse cx="80" cy="60" rx="70" ry="40" fill="#C8742B" stroke="#1D1D1F" stroke-width="5"/>
@@ -1035,7 +988,7 @@ del, ins { text-decoration: none; }
               </svg>
             </div></div>
           </div>
-          <div class="stk s-clock" data-at=".76" aria-hidden="true" style="--x:82%;--y:88%;--w:clamp(110px,11vw,160px);--r:7deg;--par:90px;--bd:.3s">
+          <div class="stk s-clock" data-at=".425" data-out=".56" aria-hidden="true" style="--x:82%;--y:88%;--w:clamp(110px,11vw,160px);--r:7deg;--par:90px;--bd:.3s">
             <div class="pop"><div class="bob">
               <svg viewBox="0 0 160 90">
                 <rect x="5" y="5" width="150" height="80" rx="40" fill="#E94F37" stroke="#1D1D1F" stroke-width="5"/>
@@ -1045,66 +998,59 @@ del, ins { text-decoration: none; }
               </svg>
             </div></div>
           </div>
+
+          <!-- Step stickers and chat: the mockup acts out each step. "Free mockup" becomes "Live" in the same spot. -->
+          <div class="stk step-only s-free" data-at=".7" data-out=".885" aria-hidden="true" style="--x:-2%;--y:-15%;--w:clamp(90px,9.4vw,136px);--r:-10deg;--par:80px">
+            <div class="pop"><div class="bob">
+              <svg viewBox="0 0 140 140">
+                <circle cx="70" cy="70" r="64" fill="#E94F37" stroke="#1D1D1F" stroke-width="5"/>
+                <circle cx="70" cy="70" r="52" fill="none" stroke="#FFF1D6" stroke-width="3" stroke-dasharray="6 7"/>
+                <text x="70" y="74" text-anchor="middle" font-family="Mona Sans, Arial, sans-serif" font-weight="900" font-size="34" fill="#FFF1D6" stroke="#1D1D1F" stroke-width="5" paint-order="stroke" stroke-linejoin="round">FREE</text>
+                <text x="70" y="96" text-anchor="middle" font-family="Mona Sans, Arial, sans-serif" font-weight="900" font-size="14" fill="#1D1D1F">MOCKUP</text>
+              </svg>
+            </div></div>
+          </div>
+          <div class="stk step-only s-live" data-at=".885" aria-hidden="true" style="--x:-2%;--y:-12%;--w:clamp(120px,12vw,172px);--r:-6deg;--par:80px">
+            <div class="pop"><div class="bob">
+              <svg viewBox="0 0 170 90">
+                <rect x="5" y="5" width="160" height="80" rx="40" fill="#4CC38A" stroke="#1D1D1F" stroke-width="5"/>
+                <circle cx="45" cy="45" r="22" fill="#FFF1D6" stroke="#1D1D1F" stroke-width="4"/>
+                <path d="M35 46l7 7 13-15" fill="none" stroke="#1D1D1F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="76" y="57" font-family="Mona Sans, Arial, sans-serif" font-weight="900" font-size="31" fill="#FFF1D6" stroke="#1D1D1F" stroke-width="5" paint-order="stroke" stroke-linejoin="round">LIVE</text>
+              </svg>
+            </div></div>
+          </div>
+          <div class="stk step-only" data-at=".79" data-out=".88" aria-hidden="true" style="--x:4%;--y:73%;--w:max-content;--r:-3deg;--par:40px">
+            <div class="pop"><p class="bubble">Can the sun be bigger?</p></div>
+          </div>
+          <div class="stk step-only" data-at=".835" data-out=".88" aria-hidden="true" style="--x:21%;--y:83%;--w:max-content;--r:2deg;--par:40px">
+            <div class="pop"><p class="bubble me">Done. Take a look.</p></div>
+          </div>
         </div>
         <ul class="notes">
-          <li data-at=".32"><b><span class="pl">+</span> Type with a voice.</b><p>One heavy, wide face sized like a shop sign.</p></li>
-          <li data-at=".58"><b><span class="pl">+</span> The motto, drawn.</b><p>The sun comes up behind the bread as you scroll.</p></li>
-          <li data-at=".76"><b><span class="pl">+</span> One clear action.</b><p>"Order for pickup" replaces "Learn more."</p></li>
+          <li data-at=".18" data-now=".7"><div class="flip">
+            <div class="face"><b><span class="pl">+</span> Type with a voice.</b><p>One heavy, wide face sized like a shop sign.</p></div>
+            <div class="face back" aria-hidden="true"><b><span class="pl">1</span> I design a free mockup.</b><p>A real preview before you spend a dollar.</p></div>
+          </div></li>
+          <li data-at=".325" data-now=".78"><div class="flip">
+            <div class="face"><b><span class="pl">+</span> The motto, drawn.</b><p>The sun comes up behind the bread as you scroll.</p></div>
+            <div class="face back" aria-hidden="true"><b><span class="pl">2</span> You decide.</b><p>Ask for changes. Nothing is owed until you're happy.</p></div>
+          </div></li>
+          <li data-at=".425" data-now=".88"><div class="flip">
+            <div class="face"><b><span class="pl">+</span> One clear action.</b><p>"Order for pickup" replaces "Learn more."</p></div>
+            <div class="face back" aria-hidden="true"><b><span class="pl">3</span> I build and launch it.</b><p>Live on your own domain, and yours to keep.</p></div>
+          </div></li>
         </ul>
       </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Scene 5: the process. Dawn carries over, a "+" grows into the gradient, and the steps stack up. -->
-  <section class="scene" id="how" data-scene aria-label="How it works">
-    <div class="stage">
-      <div class="sunburst how-rays" aria-hidden="true"></div>
-      <div class="plus" aria-hidden="true"></div>
-      <div class="sg plus-clip" id="sg-how" aria-hidden="true"></div>
-      <svg class="plus-line" viewBox="0 0 100 100" aria-hidden="true"><path d="M40 0H60V40H100V60H60V100H40V60H0V40H40Z"/></svg>
-      <div class="wrap how-inner">
-        <div class="how-head">
-          <span class="eyebrow">How it works</span>
-          <h2 class="disp"><span class="rise">Three steps. No pressure.</span></h2>
-        </div>
-        <ol class="cards">
-          <li class="step-card" data-at=".46">
-            <div>
-              <span class="num" aria-hidden="true">1</span>
-              <h3>I design a free mockup of your homepage.</h3>
-              <p>A real preview, made for your business, before you spend a dollar.</p>
-            </div>
-            <div class="viz viz-mock" aria-hidden="true">
-              <div class="vurl">yourbusiness.com</div>
-              <div class="vsite"><span class="vhill"></span><span class="vsun"></span><span class="b b1"></span><span class="b b2"></span><span class="b b3"></span><span class="b b4"></span></div>
-            </div>
-          </li>
-          <li class="step-card" data-at=".68">
-            <div>
-              <span class="num" aria-hidden="true">2</span>
-              <h3>You decide if it's right for you.</h3>
-              <p>Ask for changes, or say no thanks. Nothing is owed until you're happy.</p>
-            </div>
-            <div class="viz viz-chat" aria-hidden="true">
-              <p class="bub them">Can the logo be a little bigger?</p>
-              <p class="bub me">Done. Take a look.</p>
-              <p class="bub them">Love it. Let's build it.</p>
-            </div>
-          </li>
-          <li class="step-card" data-at=".88">
-            <div>
-              <span class="num" aria-hidden="true">3</span>
-              <h3>I build it, launch it, and hand it over.</h3>
-              <p>It goes live on your own domain, and everything is yours to keep.</p>
-            </div>
-            <div class="viz viz-live" aria-hidden="true">
-              <div class="vurl">yourbusiness.com</div>
-              <div class="check"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-              <p class="own">Live on your own domain.</p>
-            </div>
-          </li>
+      <div class="how-steps">
+        <span class="eyebrow">How it works</span>
+        <h2>Three steps. No pressure.</h2>
+        <ol>
+          <li class="face"><b><span class="pl">1</span> I design a free mockup.</b><p>A real preview before you spend a dollar.</p></li>
+          <li class="face"><b><span class="pl">2</span> You decide.</b><p>Ask for changes. Nothing is owed until you're happy.</p></li>
+          <li class="face"><b><span class="pl">3</span> I build and launch it.</b><p>Live on your own domain, and yours to keep.</p></li>
         </ol>
+      </div>
       </div>
     </div>
   </section>
@@ -1219,15 +1165,15 @@ del, ins { text-decoration: none; }
 (() => {
   document.documentElement.classList.add("js");
   const scenes = [...document.querySelectorAll("[data-scene]")];
-  const notes = [...document.querySelectorAll(".notes li")];
-  const stickers = [...document.querySelectorAll(".stk")];
-  const steps = [...document.querySelectorAll(".step-card")];
   const caseScene = document.getElementById("case");
-  const howScene = document.getElementById("how");
+  // Everything in the bakery scene that switches on at a scroll point, and off again at data-out
+  const timed = [...caseScene.querySelectorAll("[data-at]")];
+  // The note cards, which mark the step the mockup is acting out once they have flipped
+  const steps = [...caseScene.querySelectorAll("[data-now]")];
   const sameScene = document.getElementById("same");
 
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    [...notes, ...stickers, ...steps].forEach((n) => n.classList.add("on"));
+    timed.forEach((n) => n.classList.add("on"));
     return;
   }
 
@@ -1364,10 +1310,8 @@ del, ins { text-decoration: none; }
       const p = len > 0 ? Math.min(1, Math.max(0, -r.top / len)) : 1;
       s.style.setProperty("--p", p.toFixed(4));
       if (s === caseScene) {
-        for (const n of [...notes, ...stickers]) n.classList.toggle("on", p >= parseFloat(n.dataset.at));
-      }
-      if (s === howScene) {
-        for (const n of steps) n.classList.toggle("on", p >= parseFloat(n.dataset.at));
+        for (const n of timed) n.classList.toggle("on", p >= +n.dataset.at && !(p >= +n.dataset.out));
+        steps.forEach((n, i) => n.classList.toggle("now", p >= +n.dataset.now && !(p >= +steps[i + 1]?.dataset.now)));
       }
       if (s === sameScene && p !== sameP) { sameP = p; kick(); }
     }
@@ -1379,6 +1323,128 @@ del, ins { text-decoration: none; }
   addEventListener("resize", () => { request(); remeasure(); });
   update();
   kick();
+})();
+</script>
+
+<script>
+// ---- The ASCII tide: the bakery's night rises over the about scene with a torn, uneven edge. The edge is a
+// fringe of characters that thins out as it rises, with a cream crest just inside it and a few stars in the dark,
+// so the next scene starts from the same night sky. ----
+(() => {
+  const scene = document.getElementById("who");
+  const canvas = scene.querySelector(".tide");
+  const ctx = canvas.getContext("2d");
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // Reduced motion draws one still border, in the color the un-animated bakery scene starts with
+  const FILL = still ? "#EF5E62" : "#0B1033";
+  const RAMP = "#%*+=:-.", CREST = "~^-_/\\", STARS = "*+.";
+  let W = 0, H = 0, cw = 7, ch = 15, cols = 0, rows = 0, active = false, drawn = false;
+  let jag = new Float32Array(0), ys = new Float32Array(0), edge = new Int16Array(0), fringe = [], crest = [], stars = [];
+
+  const hash = (n) => {
+    n = Math.imul(n ^ (n >>> 16), 0x45d9f3b);
+    n = Math.imul(n ^ (n >>> 16), 0x45d9f3b);
+    return ((n ^ (n >>> 16)) >>> 0) / 4294967296;
+  };
+
+  function resize() {
+    const dpr = Math.min(1.5, devicePixelRatio || 1);
+    W = canvas.clientWidth;
+    H = canvas.clientHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    const fs = W < 760 ? 10 : 13;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.font = `600 ${fs}px ui-monospace, "SF Mono", Menlo, Consolas, monospace`;
+    ctx.textBaseline = "top";
+    cw = ctx.measureText("M").width;
+    ch = Math.round(fs * 1.25);
+    cols = Math.ceil(W / cw) + 1;
+    rows = Math.ceil(H / ch) + 1;
+    jag = Float32Array.from({ length: cols }, (_, i) => hash(i + 7) * 2 - 1);
+    ys = new Float32Array(cols);
+    edge = new Int16Array(cols);
+    fringe = new Array(cols); crest = new Array(cols); stars = new Array(cols);
+    drawn = false;
+  }
+
+  // ys is the smooth top of the night in px; edge is where each column's character fringe starts, jittered
+  // so the fringe tears unevenly. w runs 0 → 1 as the tide rises from below the stage to above it.
+  function shape(w, t) {
+    for (let i = 0; i < cols; i++) {
+      const x = i / cols;
+      const swell = Math.sin(x * 5.3 + t * 0.6) * 0.55 + Math.sin(x * 12.1 - t * 1.05 + 1.3) * 0.3 + Math.sin(x * 27 + t * 1.7) * 0.15;
+      // The right side leads, so the night comes in on a slant instead of as a flat line
+      ys[i] = still
+        ? H - 64 + swell * 22 + (0.5 - x) * 36
+        : H * (1.45 - 1.85 * w) + (0.5 - x) * 0.34 * H + swell * H * 0.12;
+      edge[i] = Math.floor((ys[i] + jag[i] * ch * 1.4) / ch);
+    }
+  }
+
+  function draw(w, t) {
+    ctx.clearRect(0, 0, W, H);
+    shape(w, t);
+    const F = W < 760 ? 7 : 10;      // fringe height in rows
+    const tick = Math.floor(t * 5);   // the fringe re-scatters five times a second
+    // Solid night below a smooth line; the characters above it do the tearing
+    ctx.fillStyle = FILL;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    for (let i = 0; i < cols; i++) ctx.lineTo(i * cw, Math.min(H, Math.max(0, ys[i] + ch)));
+    ctx.lineTo(W, H);
+    ctx.fill();
+    // Characters: one string per row and color
+    for (let j = 0; j < rows; j++) {
+      let hasF = false, hasC = false, hasS = false;
+      for (let i = 0; i < cols; i++) {
+        const d = edge[i] - j;            // rows above this column's fringe start
+        const inside = j - Math.floor(ys[i] / ch);  // rows below the smooth line
+        let f = " ", c = " ", s = " ";
+        if (d >= 0 && d < F) {
+          const dens = (1 - d / F) ** 1.8;
+          const r = hash((i * 73856093) ^ (j * 19349663) ^ (tick * 83492791));
+          if (r < dens) { f = RAMP[Math.min(RAMP.length - 1, Math.floor((1 - dens) * RAMP.length + r * 2))]; hasF = true; }
+        } else if (inside === 2) {
+          const r = hash((i * 2654435761) ^ (tick * 40503));
+          if (r < 0.45) { c = CREST[Math.floor(r * 100) % CREST.length]; hasC = true; }
+        } else if (inside > 3 && !still) {
+          const r = hash(i * 31 + j * 7919);
+          if (r < 0.012) { s = STARS[Math.floor(r * 1000) % STARS.length]; hasS = true; }
+        }
+        fringe[i] = f; crest[i] = c; stars[i] = s;
+      }
+      const y = j * ch;
+      if (hasF) { ctx.fillStyle = FILL; ctx.fillText(fringe.join(""), 0, y); }
+      if (hasC) { ctx.fillStyle = "rgba(255, 241, 214, 0.9)"; ctx.fillText(crest.join(""), 0, y); }
+      if (hasS) { ctx.fillStyle = "rgba(255, 241, 214, 0.75)"; ctx.fillText(stars.join(""), 0, y); }
+    }
+  }
+
+  function frame(now) {
+    if (!active) return;
+    requestAnimationFrame(frame);
+    const r = scene.getBoundingClientRect();
+    const len = r.height - innerHeight;
+    const p = len > 0 ? Math.min(1, Math.max(0, -r.top / len)) : 1;
+    const x = Math.min(1, Math.max(0, (p - 0.7) / 0.26));
+    const w = x * x * (3 - 2 * x);
+    if (w <= 0) {
+      if (drawn) { ctx.clearRect(0, 0, W, H); drawn = false; }
+      return;
+    }
+    draw(w, now / 1000);
+    drawn = true;
+  }
+
+  resize();
+  addEventListener("resize", () => { resize(); if (still) draw(0, 0); });
+  if (still) { draw(0, 0); return; }
+  new IntersectionObserver(([entry]) => {
+    const wasActive = active;
+    active = entry.isIntersecting;
+    if (active && !wasActive) requestAnimationFrame(frame);
+  }).observe(scene);
 })();
 </script>
 
@@ -1730,7 +1796,7 @@ async function mountGradient(target) {
         animate: still ? "off" : "on",
         uSpeed: 0.25, uStrength: 3.2, uDensity: 1.3, uFrequency: 5.5,
         color1: "#6FD3A2", color2: "#8FDDB4", color3: "#4CC38A",
-        lightType: "3d", brightness: 1.15, grain: "on", reflection: 0.1,
+        lightType: "3d", brightness: 1.15, grain: "off", reflection: 0.1,
         cDistance: 3.6, cPolarAngle: 90, cAzimuthAngle: 180,
         positionX: -1.4, positionY: 0, positionZ: 0,
         rotationX: 0, rotationY: 10, rotationZ: 50
@@ -1739,16 +1805,14 @@ async function mountGradient(target) {
   );
 }
 
-// If WebGL or the CDN fails, the flat green underneath stays, so each section still reads
-for (const [sectionId, targetId] of [["who", "sg"], ["how", "sg-how"]]) {
-  const near = new IntersectionObserver((entries) => {
-    if (entries.some((e) => e.isIntersecting)) {
-      near.disconnect();
-      mountGradient(document.getElementById(targetId)).catch(() => {});
-    }
-  }, { rootMargin: "250% 0px" });
-  near.observe(document.getElementById(sectionId));
-}
+// If WebGL or the CDN fails, the flat green underneath stays, so the section still reads
+const near = new IntersectionObserver((entries) => {
+  if (entries.some((e) => e.isIntersecting)) {
+    near.disconnect();
+    mountGradient(document.getElementById("sg")).catch(() => {});
+  }
+}, { rootMargin: "250% 0px" });
+near.observe(document.getElementById("who"));
 </script>
 </body>
 </html>
